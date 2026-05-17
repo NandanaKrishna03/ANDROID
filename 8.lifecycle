@@ -1,0 +1,97 @@
+activity.xml
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Activity Life Cycle Log"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:fontFamily="monospace"
+            android:text="(Lifecycle events will appear here)"/>
+
+    </LinearLayout>
+</ScrollView>
+
+
+main.java
+package com.example.lifecycle;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "LifeCycleDemo";
+    TextView tvLog;
+    StringBuilder logText = new StringBuilder();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        tvLog = findViewById(R.id.tvLog);
+        log("onCreate()  — Activity is being created");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        log("onStart()   — Activity is becoming visible");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        log("onResume()  — Activity is now in foreground");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        log("onPause()   — Activity going to background");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        log("onStop()    — Activity is no longer visible");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        log("onRestart() — Activity is restarting");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        log("onDestroy() — Activity is being destroyed");
+    }
+
+    private void log(String msg) {
+        Log.d(TAG, msg);
+        logText.append("\n").append(msg);
+        if (tvLog != null) tvLog.setText(logText.toString());
+    }
+}
+
