@@ -1,0 +1,179 @@
+//////MainActivity.java///////
+
+package com.example.bill;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+    EditText etName,etUnits;
+    Button btnCalculate;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        etName=findViewById(R.id.etName);
+        etName=findViewById(R.id.etUnits);
+        btnCalculate=findViewById(R.id.btnCalculate);
+        btnCalculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name=etName.getText().toString();
+                int units=Integer.parseInt(etUnits.getText().toString());
+
+                double bill=0;
+
+                if(units<=100){
+                    bill=units*5;
+                } else if (units<=250) {
+                    bill = (100 * 5) + ((units - 100) * 10);
+                }
+                else {
+                    bill = (100 * 5) + (150 * 10) + ((units - 250) * 20);
+                }
+                bill = bill + 75;
+
+                Intent intent=new Intent(MainActivity.this,
+                        activity_bill2.class);
+                intent.putExtra("name",name);
+                intent.putExtra("units",units);
+                intent.putExtra("bill",bill);
+
+                startActivity(intent);
+            }
+        });
+
+
+    }
+}
+
+
+//////////activity_bill2.java////////////
+
+package com.example.bill;
+
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bill.R;
+
+public class activity_bill2 extends AppCompatActivity {
+
+    TextView tvResult;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bill2);
+
+        tvResult = findViewById(R.id.tvResult);
+
+        String name = getIntent().getStringExtra("name");
+        int units = getIntent().getIntExtra("units", 0);
+        double bill = getIntent().getDoubleExtra("bill", 0);
+
+        String result =
+                "Customer Name: " + name +
+                        "\nUnits Consumed: " + units +
+                        "\nMeter Charge: ₹75" +
+                        "\nTotal Water Bill: ₹" + bill;
+
+        tvResult.setText(result);
+    }
+}
+
+////////////AndroidManifest.xml//////////////
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Bill">
+        <activity
+            android:name=".activity_bill2"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+
+////////activity_main.xml////////////////
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_customer_name" />
+
+    <EditText
+        android:id="@+id/etUnits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="number"
+        android:inputType="number"/>
+    <Button
+        android:id="@+id/btnCalculate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calculate Bill"
+        android:layout_marginTop="20dp"/>
+</LinearLayout>
+
+/////////activity_bill2.xml///////////////
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"/>
+
+</LinearLayout>
