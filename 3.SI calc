@@ -1,0 +1,208 @@
+main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+ 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Simple Interest Calculator"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+ 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SI = (P x R x T) / 100"
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp"/>
+ 
+    <EditText
+        android:id="@+id/etPrincipal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Principal (P)"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="12dp"/>
+ 
+    <EditText
+        android:id="@+id/etRate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Rate (R) %"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="12dp"/>
+ 
+    <EditText
+        android:id="@+id/etTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Time in Months (T)"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="24dp"/>
+ 
+    <Button
+        android:id="@+id/btnCalculate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calculate"/>
+ 
+</LinearLayout>
+
+main.java
+package com.example.simpleinterest;
+ 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+ 
+public class MainActivity extends AppCompatActivity {
+ 
+    EditText etPrincipal, etRate, etTime;
+    Button btnCalculate;
+ 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+ 
+        etPrincipal  = findViewById(R.id.etPrincipal);
+        etRate       = findViewById(R.id.etRate);
+        etTime       = findViewById(R.id.etTime);
+        btnCalculate = findViewById(R.id.btnCalculate);
+ 
+        btnCalculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+ 
+                String p = etPrincipal.getText().toString().trim();
+                String r = etRate.getText().toString().trim();
+                String t = etTime.getText().toString().trim();
+ 
+                // Check empty fields
+                if (p.isEmpty() || r.isEmpty() || t.isEmpty()) {
+                    Toast.makeText(MainActivity.this,
+                            "Please fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+ 
+                // Pass values to ResultActivity using Intent
+                Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+                intent.putExtra("principal", Double.parseDouble(p));
+                intent.putExtra("rate",      Double.parseDouble(r));
+                intent.putExtra("time",      Double.parseDouble(t));
+                startActivity(intent);
+            }
+        });
+    }
+}
+ 
+ result.java
+ package com.example.simpleinterest;
+ 
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+ 
+public class ResultActivity extends AppCompatActivity {
+ 
+    TextView tvResult;
+    Button   btnClear;
+ 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_result);
+ 
+        tvResult = findViewById(R.id.tvResult);
+        btnClear = findViewById(R.id.btnClear);
+ 
+        // Receive values from MainActivity
+        double principal = getIntent().getDoubleExtra("principal", 0);
+        double rate      = getIntent().getDoubleExtra("rate", 0);
+        double time      = getIntent().getDoubleExtra("time", 0);
+ 
+        // Formula: SI = (P x R x T) / 100
+        double si = (principal * rate * time) / 100;
+ 
+        // Show result in TextView
+        tvResult.setText("Simple Interest: Rs." + String.format("%.2f", si));
+ 
+        // Show Toast
+        Toast.makeText(this,
+                "Interest Calculated: Rs." + String.format("%.2f", si),
+                Toast.LENGTH_LONG).show();
+ 
+        // Clear button
+        btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+ 
+                // Clear the TextView
+                tvResult.setText("Simple Interest: ");
+ 
+                // Show AlertDialog
+                new AlertDialog.Builder(ResultActivity.this)
+                        .setTitle("Cleared")
+                        .setMessage("All fields cleared.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        });
+    }
+}
+
+result.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+ 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Result"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
+ 
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Simple Interest: "
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="40dp"/>
+ 
+    <Button
+        android:id="@+id/btnClear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Clear"/>
+ 
+</LinearLayout>
+
+
+ 
