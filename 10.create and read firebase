@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Firebase Realtime DB — User Profile"
+        android:textSize="18sp" android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText android:id="@+id/etName"  android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="Name"
+        android:inputType="textPersonName" android:layout_marginBottom="12dp"/>
+
+    <EditText android:id="@+id/etEmail" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="Email"
+        android:inputType="textEmailAddress" android:layout_marginBottom="12dp"/>
+
+    <EditText android:id="@+id/etPhone" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="Phone"
+        android:inputType="phone" android:layout_marginBottom="24dp"/>
+
+    <Button android:id="@+id/btnSave" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Save to Firebase"
+        android:layout_marginBottom="12dp"/>
+
+    <Button android:id="@+id/btnRead" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Read from Firebase"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView android:id="@+id/tvOutput" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:textSize="16sp"
+        android:text="(Profile data will appear here)"/>
+
+</LinearLayout>
+
+
+
+package com.example.firebasedb;
+ 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+ 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+ 
+public class MainActivity extends AppCompatActivity {
+ 
+    EditText   etName, etEmail, etPhone;
+    Button     btnSave, btnRead;
+    TextView   tvOutput;
+ 
+    // Firebase reference
+    DatabaseReference dbRef;
+ 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+ 
+        etName   = findViewById(R.id.etName);
+        etEmail  = findViewById(R.id.etEmail);
+        etPhone  = findViewById(R.id.etPhone);
+        btnSave  = findViewById(R.id.btnSave);
+        btnRead  = findViewById(R.id.btnRead);
+        tvOutput = findViewById(R.id.tvOutput);
+ 
+        // Point to "users/profile" node in Realtime Database
+        dbRef = FirebaseDatabase.getInstance().getReference("users").child("profile");
+ 
+        // ── CREATE ──────────────────────────────────────────────────
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name  = etName.getText().toString().trim();
+                String email = etEmail.getText().toString().trim();
+                String phone = etPhone.getText().toString().trim();
+ 
+                if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+                    Toast.makeText(MainActivity.this,
+                            "Fill all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+ 
+                UserProfile user = new UserProfile(name, email, phone);
+ 
+                dbRef.setValue(user)
+                     .addOnSuccessListener(unused ->
+                             Toast.makeText(MainActivity.this,
+                                     "Profile saved!", Toast.LENGTH_SHORT).show())
+                     .addOnFailureListener(e ->
+                             Toast.makeText(MainActivity.this,
+                                     "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+        });
+ 
+        // ── READ ─────────────────────────────────────────────────────
+        btnRead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            UserProfile user = snapshot.getValue(UserProfile.class);
+                            if (user != null) {
+                                tvOutput.setText(
+                                        "Name:  " + user.name  + "\n" +
+                                        "Email: " + user.email + "\n" +
+                                        "Phone: " + user.phone);
+                            }
+                        } else {
+                            tvOutput.setText("No profile found.");
+                        }
+                    }
+ 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(MainActivity.this,
+                                "Read failed: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+ 
+    // ── Model class ──────────────────────────────────────────────────
+    public static class UserProfile {
+        public String name, email, phone;
+ 
+        public UserProfile() {} // Required empty constructor for Firebase
+ 
+        public UserProfile(String name, String email, String phone) {
+            this.name  = name;
+            this.email = email;
+            this.phone = phone;
+        }
+    }
+}
