@@ -1,0 +1,213 @@
+activity main xml
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App 7: Temperature Converter — Activity 1 Layout -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+ 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Temperature Converter"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+ 
+    <EditText
+        android:id="@+id/etTemp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Temperature"
+        android:inputType="numberDecimal|numberSigned"
+        android:layout_marginBottom="20dp"/>
+ 
+    <!-- RadioGroup for conversion direction -->
+    <RadioGroup
+        android:id="@+id/rgConversion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="24dp">
+ 
+        <RadioButton
+            android:id="@+id/rbCtoF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Celsius to Fahrenheit"
+            android:checked="true"/>
+ 
+        <RadioButton
+            android:id="@+id/rbFtoC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fahrenheit to Celsius"/>
+ 
+    </RadioGroup>
+ 
+    <Button
+        android:id="@+id/btnConvert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Convert"/>
+ 
+</LinearLayout>
+
+
+main.java
+package com.example.tempconverter;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText  etTemp;
+    RadioGroup rgConversion;
+    Button    btnConvert;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etTemp        = findViewById(R.id.etTemp);
+        rgConversion  = findViewById(R.id.rgConversion);
+        btnConvert    = findViewById(R.id.btnConvert);
+
+        btnConvert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String input = etTemp.getText().toString().trim();
+                if (input.isEmpty()) {
+                    Toast.makeText(MainActivity.this,
+                            "Enter a temperature value", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                double temp = Double.parseDouble(input);
+                boolean isCtoF = (rgConversion.getCheckedRadioButtonId() == R.id.rbCtoF);
+
+                Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+                intent.putExtra("temp", temp);
+                intent.putExtra("isCtoF", isCtoF);
+                startActivity(intent);
+            }
+        }); 
+    }
+}
+
+
+
+ACTIVITYRESULT.XML
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App 7: Temperature Converter — Activity 2 Layout -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+ 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Converted Temperature"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
+ 
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_marginBottom="40dp"
+        android:text="—"/>
+ 
+    <Button
+        android:id="@+id/btnClear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Clear"/>
+ 
+</LinearLayout>
+
+
+RESULTACTIVITY.JAVA
+// App 7: Temperature Converter
+// File: ResultActivity.java (Activity 2)
+ 
+package com.example.tempconverter;
+ 
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+ 
+public class ResultActivity extends AppCompatActivity {
+ 
+    TextView tvResult;
+    Button   btnClear;
+ 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_result);
+ 
+        tvResult = findViewById(R.id.tvResult);
+        btnClear = findViewById(R.id.btnClear);
+ 
+        double  temp   = getIntent().getDoubleExtra("temp", 0);
+        boolean isCtoF = getIntent().getBooleanExtra("isCtoF", true);
+ 
+        double result;
+        String label;
+ 
+        if (isCtoF) {
+            // Celsius → Fahrenheit: F = (C × 9/5) + 32
+            result = (temp * 9.0 / 5.0) + 32;
+            label  = String.format("%.2f °C  →  %.2f °F", temp, result);
+        } else {
+            // Fahrenheit → Celsius: C = (F − 32) × 5/9
+            result = (temp - 32) * 5.0 / 9.0;
+            label  = String.format("%.2f °F  →  %.2f °C", temp, result);
+        }
+ 
+        tvResult.setText(label);
+        Toast.makeText(this, "Result: " + label, Toast.LENGTH_LONG).show();
+ 
+        btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvResult.setText("—");
+ 
+                new AlertDialog.Builder(ResultActivity.this)
+                        .setTitle("Cleared")
+                        .setMessage("Cleared Successfully.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+            }
+        });
+    }
+}
+
+
+
