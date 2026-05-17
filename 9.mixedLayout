@@ -1,0 +1,117 @@
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Section 1: LinearLayout (Horizontal) -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="1. LinearLayout (Horizontal)" android:textStyle="bold"
+            android:textSize="16sp" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="16dp">
+            <Button android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content" android:text="Button A" android:layout_margin="4dp"/>
+            <Button android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content" android:text="Button B" android:layout_margin="4dp"/>
+            <Button android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content" android:text="Button C" android:layout_margin="4dp"/>
+        </LinearLayout>
+
+        <!-- Section 2: RelativeLayout -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="2. RelativeLayout" android:textStyle="bold"
+            android:textSize="16sp" android:layout_marginBottom="8dp"/>
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="120dp"
+            android:background="#E8EAF6" android:layout_marginBottom="16dp">
+
+            <TextView android:id="@+id/tvCenter"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Center" android:layout_centerInParent="true"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Top Left" android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" android:padding="4dp"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Bottom Right" android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true" android:padding="4dp"/>
+        </RelativeLayout>
+
+        <!-- Section 3: Mixed input components -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="3. Mixed Input Components" android:textStyle="bold"
+            android:textSize="16sp" android:layout_marginBottom="8dp"/>
+
+        <EditText android:id="@+id/etName"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Enter your name" android:layout_marginBottom="8dp"/>
+
+        <CheckBox android:id="@+id/cbTerms"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="I agree to terms and conditions" android:layout_marginBottom="8dp"/>
+
+        <RadioGroup android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="8dp">
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Male" android:checked="true"/>
+            <RadioButton android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Female"/>
+        </RadioGroup>
+
+        <SeekBar android:id="@+id/seekBar"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:max="100" android:progress="50" android:layout_marginBottom="8dp"/>
+
+        <Switch android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Enable Notifications" android:layout_marginBottom="16dp"/>
+
+        <!-- Section 4: TableLayout inside Linear -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="4. TableLayout" android:textStyle="bold"
+            android:textSize="16sp" android:layout_marginBottom="8dp"/>
+
+        <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:stretchColumns="*">
+            <TableRow>
+                <TextView android:text="Name" android:padding="8dp" android:background="#C5CAE9"/>
+                <TextView android:text="Age"  android:padding="8dp" android:background="#C5CAE9"/>
+                <TextView android:text="City" android:padding="8dp" android:background="#C5CAE9"/>
+            </TableRow>
+            <TableRow>
+                <TextView android:text="Alice" android:padding="8dp"/>
+                <TextView android:text="22"    android:padding="8dp"/>
+                <TextView android:text="Kochi" android:padding="8dp"/>
+            </TableRow>
+            <TableRow>
+                <TextView android:text="Bob"   android:padding="8dp"/>
+                <TextView android:text="25"    android:padding="8dp"/>
+                <TextView android:text="Delhi" android:padding="8dp"/>
+            </TableRow>
+        </TableLayout>
+
+    </LinearLayout>
+</ScrollView>
+
+ MainActivity.java
+
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Connect Java file with XML layout
+        setContentView(R.layout.activity_main);
+    }
+}
